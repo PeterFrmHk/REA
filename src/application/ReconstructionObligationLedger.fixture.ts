@@ -1,3 +1,4 @@
+import type { ReconstructionObligationProof } from "../domain/reconstructionObligationProof.js";
 import { PROCESS_PROVIDER } from "../domain/process/processEvidenceProvider.js";
 import {
   buildReconstructionObligationLedgerEvidenceValidated,
@@ -141,3 +142,21 @@ export const reviewedObligation = (
   disposition: "active",
   review_evidence_ids: [evidenceId],
 });
+
+/** Synthetic test fixture only; not a conversion of historical proof. */
+export const exactProofEvidence = (
+  id: string,
+  result: ReconstructionObligationProof,
+  authority: "shipped-artifact" | "controlled-replay" = "controlled-replay",
+) => createEvidence(
+  undefined,
+  { id: `proof-${id}`, name: "Reconstruction proof", version: "1" },
+  {
+    predicateType: "rea.reconstruction-proof",
+    operation: "verify_reconstruction_obligations",
+    parameters: {},
+    result: jsonValueSchema.parse(result),
+    confidence: "observed",
+    authority,
+  },
+);

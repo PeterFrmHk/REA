@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  boundProofEvidence,
+  exactProofEvidence,
   build,
   originalCases,
   processEvidence,
@@ -186,15 +186,16 @@ describe("reconstruction obligation ledger case closure", () => {
     const obligation = initial.obligations[0];
     if (obligation === undefined)
       throw new Error("Expected process obligation");
-    const fixtureIds = obligation.required_case_kinds.map(
-      (caseKind) => `packaged.${caseKind}`,
-    );
-    const proof = boundProofEvidence("packaged", {
-      obligation_ids: [obligation.obligation_id],
-      fixture_ids: fixtureIds,
-      case_kinds: obligation.required_case_kinds,
-      verifier_ids: ["verifier.packaged"],
-      claim_ids: ["claim.process"],
+    const proof = exactProofEvidence("packaged", {
+      bindings: [{
+        obligation_id: obligation.obligation_id,
+        obligation_version: obligation.obligation_version,
+        owner_sha256: "2".repeat(64),
+        fixtures: obligation.required_case_kinds.map((caseKind) => ({
+          fixture_id: `packaged.${caseKind}`, case_kind: caseKind, passed: true,
+        })),
+        verifiers: [{ verifier_id: "verifier.packaged", claim_id: "claim.process", passed: true }],
+      }],
     });
     const ledgerRequest = request([capture, proof], {
       manifest: {

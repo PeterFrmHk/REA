@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  boundProofEvidence,
+  exactProofEvidence,
   build,
   originalCases,
   processEvidence,
@@ -69,15 +69,15 @@ describe("reconstruction obligation ledger", () => {
 
   it("propagates an open dependency through the full obligation chain", () => {
     const ids = ["obl.chain.a", "obl.chain.b", "obl.chain.c"] as const;
-    const evidence = boundProofEvidence(
+    const evidence = exactProofEvidence(
       "fixture-chain",
-      {
-        obligation_ids: ids,
-        fixture_ids: ids.map((id) => `fixture.${id}`),
-        case_kinds: ["positive"],
-        verifier_ids: ids.map((id) => `verifier.${id}`),
-        claim_ids: ids.map((id) => `claim.${id}`),
-      },
+      { bindings: ids.map((id) => ({
+        obligation_id: id,
+        obligation_version: 1,
+        owner_sha256: "6".repeat(64),
+        fixtures: [{ fixture_id: `fixture.${id}`, case_kind: "positive", passed: true }],
+        verifiers: [{ verifier_id: `verifier.${id}`, claim_id: `claim.${id}`, passed: true }],
+      })) },
       "shipped-artifact",
     );
     const reviewed = ids.map((id, index) => ({
