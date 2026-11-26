@@ -269,7 +269,7 @@ const evaluateBinding = (
       continue;
     }
     if (
-      !fixtures.some(
+      !fixtures.every(
         (fixture) =>
           proofAuthoritySatisfies(
             fixture.authority,
@@ -280,7 +280,10 @@ const evaluateBinding = (
             return (
               evidence !== undefined &&
               evidenceAuthoritySupportsProof(evidence, fixture.authority, {
+                kind: "fixture",
                 obligationId: candidate.obligation_id,
+                obligationVersion: candidate.obligation_version,
+                ownerSha256: binding.owner.owner_sha256,
                 fixtureId: fixture.fixture_id,
                 caseKind: fixture.case_kind,
               })
@@ -332,7 +335,10 @@ const evaluateVerifier = (
     ) ||
     (resultEvidence !== undefined &&
       !evidenceAuthoritySupportsProof(resultEvidence, verifier.authority, {
+        kind: "verifier",
         obligationId: candidate.obligation_id,
+        obligationVersion: candidate.obligation_version,
+        ownerSha256: binding.owner.owner_sha256,
         verifierId: verifier.verifier_id,
         claimId: verifier.claim_id,
       }))
